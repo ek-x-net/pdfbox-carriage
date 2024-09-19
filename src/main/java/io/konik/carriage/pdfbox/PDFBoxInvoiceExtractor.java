@@ -27,6 +27,7 @@ import java.io.InputStream;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
@@ -68,7 +69,7 @@ public class PDFBoxInvoiceExtractor implements FileExtractor {
    }
    
    private static final InputStream extractIntern(InputStream pdfStream) throws IOException {
-      PDDocument doc = PDDocument.load(pdfStream);
+      PDDocument doc = Loader.loadPDF(pdfStream.readAllBytes());
       InputStream inputStream = extractZugferdFileAttachment(doc);
       return new CallBackInputStream(inputStream, doc);
    }

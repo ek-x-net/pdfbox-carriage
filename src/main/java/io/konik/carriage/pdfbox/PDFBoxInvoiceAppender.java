@@ -30,6 +30,7 @@ import javax.inject.Singleton;
 import javax.xml.transform.TransformerException;
 
 import io.konik.carriage.utils.ProducerAppendParameter;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -97,7 +98,7 @@ public class PDFBoxInvoiceAppender implements FileAppender {
       InputStream inputPdf = appendParameter.inputPdf();
       PDDocument doc = null;
       try {
-         doc = PDDocument.load(inputPdf);
+         doc = Loader.loadPDF(inputPdf.readAllBytes());
          doc.setAllSecurityToBeRemoved(true);
          checkisPdfA(doc);
          convertToPdfA3(doc);
@@ -193,7 +194,6 @@ public class PDFBoxInvoiceAppender implements FileAppender {
       PDEmbeddedFilesNameTreeNode fileNameTreeNode = new PDEmbeddedFilesNameTreeNode();
 
       PDEmbeddedFile embeddedFile = createEmbeddedFile(doc, zugferdFile);
-      embeddedFile.addCompression();
       PDComplexFileSpecification fileSpecification = createFileSpecification(embeddedFile);
 
       COSDictionary dict = fileSpecification.getCOSObject();
@@ -221,7 +221,6 @@ public class PDFBoxInvoiceAppender implements FileAppender {
       Calendar now = Calendar.getInstance();
       ByteCountingInputStream countingIs = new ByteCountingInputStream(zugferdFile);
       PDEmbeddedFile embeddedFile = new PDEmbeddedFile(doc, countingIs);
-      embeddedFile.addCompression();
       embeddedFile.setSubtype(MIME_TYPE);
       embeddedFile.setSize(countingIs.getByteCount());
       embeddedFile.setCreationDate(now);
